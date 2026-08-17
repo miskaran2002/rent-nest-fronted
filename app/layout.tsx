@@ -1,4 +1,23 @@
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
+import AuthProvider from "../components/shared/AuthProvider"; // ইম্পোর্ট করা হয়েছে
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "RentNest - Find & List Rental Properties with Ease",
+  description: "A secure and modern marketplace for renting properties.",
+};
 
 export default function RootLayout({
   children,
@@ -7,8 +26,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        {children}
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        {/* গ্লোবাল অথ প্রোভাইডার দিয়ে সম্পূর্ণ বডি র‍্যাপ করা হলো */}
+        <AuthProvider>
+          {children}
+          <Toaster position="top-center" reverseOrder={false} />
+        </AuthProvider>
       </body>
     </html>
   );
