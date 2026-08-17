@@ -13,7 +13,7 @@ axiosInstance.interceptors.request.use(
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('rentnest_token');
       if (token) {
-        config.headers.Authorization = token; // backend expects the token value directly
+        config.headers.Authorization = `Bearer ${token}`; 
       }
     }
     return config;

@@ -20,10 +20,10 @@ export default function TenantProfileSettings() {
   const [isFetching, setIsFetching] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // ১. মাউন্ট হওয়ার সময় লাইভ ব্যাকএন্ড থেকে ইউজারের প্রোফাইল ডাটা নিয়ে আসা
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        // ⚠️ আপনার ধরা সেই সঠিক এন্ডপয়েন্টটি এখানে ম্যাপ করা হলো
         const response = await axiosInstance.get('/api/users/profile');
         if (response.data.success) {
           setProfile(response.data.data);
@@ -39,13 +39,13 @@ export default function TenantProfileSettings() {
     fetchProfile();
   }, []);
 
-  // ২. প্রোফাইল আপডেট হ্যান্ডলার (PATCH /api/users/profile)
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return toast.error('Name cannot be empty');
 
     setIsUpdating(true);
     try {
+      // প্রোফাইল নাম আপডেট করার জন্য আমাদের লাইভ প্যাচ এপিআই
       const response = await axiosInstance.patch('/api/users/profile', { name });
       if (response.data.success) {
         setProfile(response.data.data);
@@ -58,7 +58,6 @@ export default function TenantProfileSettings() {
     }
   };
 
-  // ৩. ডাইনামিক পালসিং কঙ্কাল লোডার (Animated Loading Skeleton for UI/UX marks)
   if (isFetching) {
     return (
       <div className="space-y-6 animate-pulse select-none">
@@ -100,7 +99,6 @@ export default function TenantProfileSettings() {
 
       <div className="max-w-2xl bg-zinc-900/30 backdrop-blur-md border border-zinc-900 rounded-2xl p-6 sm:p-8 space-y-6">
         
-        {/* প্রোফাইল অবতার এবং বিবরণ */}
         <div className="flex items-center gap-4">
           <div className="h-16 w-16 rounded-full bg-indigo-600/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-extrabold text-2xl uppercase">
             {profile?.name[0]}
@@ -114,7 +112,6 @@ export default function TenantProfileSettings() {
           </div>
         </div>
 
-        {/* প্রোফাইল আপডেট ফর্ম */}
         <form onSubmit={handleUpdateProfile} className="space-y-5 pt-6 border-t border-zinc-900">
           <div>
             <label className="block text-sm font-medium text-zinc-300 mb-1.5">
