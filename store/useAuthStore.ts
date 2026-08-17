@@ -17,7 +17,6 @@ type TAuthStore = {
   initializeAuth: () => void;
 };
 
-// broweser without window object will throw error, so we need to check if window is defined before using it
 const decodeToken = (token: string): TUser | null => {
   try {
     const base64Url = token.split('.')[1];
@@ -41,12 +40,21 @@ export const useAuthStore = create<TAuthStore>((set) => ({
   token: null,
   isLoading: true,
   setAuth: (token) => {
+    // ১. লোকাল স্টোরেজে সেভ করা (ক্লায়েন্ট সাইড রিকোয়েস্টের জন্য)
     localStorage.setItem('rentnest_token', token);
+    
+    // ২. ⚠️ ব্রাউজার কুকিতে সেভ করা (Next.js Middleware সার্ভার সাইড রিডিংয়ের জন্য)
+    document.cookie = `rentnest_token=${token}; path=/; max-age=604800; SameSite=Lax; Secure`;
+
     const decodedUser = decodeToken(token);
     set({ token, user: decodedUser, isLoading: false });
   },
   clearAuth: () => {
     localStorage.removeItem('rentnest_token');
+    
+    // কুকি মুছে ফেলা
+    document.cookie = 'rentnest_token=; path=/; max-age=0';
+
     set({ token: null, user: null, isLoading: false });
   },
   initializeAuth: () => {
