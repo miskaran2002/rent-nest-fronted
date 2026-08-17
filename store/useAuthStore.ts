@@ -17,7 +17,7 @@ type TAuthStore = {
   initializeAuth: () => void;
 };
 
-// ব্রাউজারে অতিরিক্ত লাইব্রেরি ছাড়া নিরাপদে JWT পেলোড ডিকোড করার হেল্পার
+// broweser without window object will throw error, so we need to check if window is defined before using it
 const decodeToken = (token: string): TUser | null => {
   try {
     const base64Url = token.split('.')[1];

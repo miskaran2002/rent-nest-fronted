@@ -7,13 +7,13 @@ const axiosInstance = axios.create({
   },
 });
 
-// রিকোয়েস্ট ইন্টারসেপ্টর: প্রতিবার এপিআই কলের সময় অটোমেটিক টোকেন যুক্ত করবে
+// request interceptor to add token to headers
 axiosInstance.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('rentnest_token');
       if (token) {
-        config.headers.Authorization = token; // ব্যাকএন্ড এই সরাসরি টোকেন ভ্যালুটি এক্সপেক্ট করে
+        config.headers.Authorization = token; // backend expects the token value directly
       }
     }
     return config;
