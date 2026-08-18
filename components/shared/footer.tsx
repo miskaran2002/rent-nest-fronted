@@ -50,7 +50,7 @@ export default function Footer() {
           <ul className="space-y-2 text-sm">
             <li className="flex items-center gap-2 text-zinc-500">
               <Mail className="h-4 w-4 text-indigo-500" />
-              support@rentnest.com
+              mrayhan21.cse@bu.ac.bd
             </li>
             <li className="flex items-center gap-2 text-zinc-500">
               <ShieldAlert className="h-4 w-4 text-indigo-500" />
