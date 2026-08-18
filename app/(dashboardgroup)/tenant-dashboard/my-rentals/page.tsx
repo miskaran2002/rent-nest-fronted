@@ -9,6 +9,7 @@ import ReviewDialog from '../../_components/ReviewDialog';
 import { RentalService } from '@/service/rental.service';
 import { PaymentService } from '@/service/payment.service';
 
+
 export default function MyRentalsPage() {
   const [rentals, setMyRentals] = useState<any[]>([]);
   const [isFetching, setIsFetching] = useState(true);
@@ -31,14 +32,12 @@ export default function MyRentalsPage() {
     fetchRentals();
   }, []);
 
-  // Stripe Checkout সেশন তৈরি এবং রিডাইরেক্ট হ্যান্ডলার
   const handlePayment = async (rentalRequestId: string) => {
     const loadingToast = toast.loading('Connecting to Stripe secure checkout...');
     try {
       const response = await PaymentService.createPaymentSession(rentalRequestId);
       if (response.success && response.data.checkoutUrl) {
         toast.dismiss(loadingToast);
-        // স্ট্রাইপ গেটওয়ে পেজে রিডাইরেক্ট
         window.location.href = response.data.checkoutUrl;
       }
     } catch (error: any) {
@@ -47,18 +46,27 @@ export default function MyRentalsPage() {
     }
   };
 
+  // ⚠️ অ্যাসাইনমেন্টের রিকোয়ারমেন্ট অনুযায়ী ডাইনামিক ইউআই ব্যাজ কালার কনফিগারেশন
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'PENDING':
-        return <span className="flex items-center gap-1 text-xs font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full"><Clock className="h-3.5 w-3.5" /> PENDING</span>;
+        // PENDING ➔ Yellow/Orange Badge
+        return <span className="flex items-center gap-1 text-[11px] font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full uppercase"><Clock className="h-3.5 w-3.5" /> PENDING</span>;
       case 'APPROVED':
-        return <span className="flex items-center gap-1 text-xs font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-full"><CheckCircle2 className="h-3.5 w-3.5" /> APPROVED</span>;
+        // APPROVED ➔ Blue Badge
+        return <span className="flex items-center gap-1 text-[11px] font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-full uppercase"><CheckCircle2 className="h-3.5 w-3.5" /> APPROVED</span>;
+      case 'REJECTED':
+      case 'CANCELLED':
+        // REJECTED ➔ Red Badge
+        return <span className="flex items-center gap-1 text-[11px] font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-full uppercase"><XCircle className="h-3.5 w-3.5" /> REJECTED</span>;
       case 'ACTIVE':
-        return <span className="flex items-center gap-1 text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full"><CheckCircle2 className="h-3.5 w-3.5" /> ACTIVE</span>;
+        // ACTIVE ➔ Green Badge
+        return <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full uppercase"><CheckCircle2 className="h-3.5 w-3.5" /> ACTIVE</span>;
       case 'COMPLETED':
-        return <span className="flex items-center gap-1 text-xs font-bold text-zinc-400 bg-zinc-900 border border-zinc-800 px-2.5 py-1 rounded-full"><CheckCircle2 className="h-3.5 w-3.5" /> COMPLETED</span>;
+        // COMPLETED ➔ Gray Badge
+        return <span className="flex items-center gap-1 text-[11px] font-bold text-zinc-400 bg-zinc-900 border border-zinc-800 px-2.5 py-1 rounded-full uppercase"><CheckCircle2 className="h-3.5 w-3.5" /> COMPLETED</span>;
       default:
-        return <span className="flex items-center gap-1 text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-full"><XCircle className="h-3.5 w-3.5" /> REJECTED</span>;
+        return <span className="flex items-center gap-1 text-[11px] font-bold text-zinc-400 bg-zinc-900 border border-zinc-850 px-2.5 py-1 rounded-full uppercase">{status}</span>;
     }
   };
 
@@ -83,7 +91,7 @@ export default function MyRentalsPage() {
               className="bg-zinc-900/30 backdrop-blur-md border border-zinc-900 p-5 rounded-2xl flex flex-col justify-between space-y-4"
             >
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-4">
                   <h3 className="text-base font-bold text-white line-clamp-1">{rental.property.title}</h3>
                   {getStatusBadge(rental.status)}
                 </div>
@@ -111,25 +119,25 @@ export default function MyRentalsPage() {
                   {rental.property.price.toLocaleString()} / mo
                 </div>
 
-                {/* APPROVED স্ট্যাটাস থাকলে Stripe পেমেন্ট গেটওয়ে CTA বাটন আসবে */}
+                {/* APPROVED স্ট্যাটাস থাকলে "Pay Now" বাটন আসবে */}
                 {rental.status === 'APPROVED' && (
                   <button
                     onClick={() => handlePayment(rental.id)}
                     className="flex items-center gap-1.5 py-1.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-600/25 transition-all cursor-pointer"
                   >
                     <CreditCard className="h-4 w-4" />
-                    Proceed to Payment
+                    Pay Now
                   </button>
                 )}
 
-                {/* ACTIVE বা COMPLETED থাকলে রিভিউ দেওয়ার বাটন সচল হবে */}
-                {(rental.status === 'ACTIVE' || rental.status === 'COMPLETED') && (
+                {/* ACTIVE স্ট্যাটাস থাকলে "Leave Review" বাটন আসবে */}
+                {rental.status === 'ACTIVE' && (
                   <button
                     onClick={() => setSelectedPropertyId(rental.propertyId)}
-                    className="flex items-center gap-1.5 py-1.5 px-4 border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-900 text-zinc-300 hover:text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 py-1.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-600/25 transition-all cursor-pointer"
                   >
-                    <MessageSquare className="h-4 w-4 text-indigo-400" />
-                    Write a Review
+                    <MessageSquare className="h-4 w-4" />
+                    Leave Review
                   </button>
                 )}
               </div>
@@ -142,13 +150,12 @@ export default function MyRentalsPage() {
         </div>
       )}
 
-      {/* অ্যানিমেটেড রিভিউ রাইটিং ডায়ালগ উইন্ডো */}
       {selectedPropertyId && (
         <ReviewDialog
           isOpen={!!selectedPropertyId}
           onClose={() => {
             setSelectedPropertyId(null);
-            fetchRentals(); // ডাটা রি-লোডিং সিঙ্ক
+            fetchRentals();
           }}
           propertyId={selectedPropertyId}
         />
