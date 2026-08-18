@@ -59,6 +59,7 @@ export default function Navbar() {
               <Home className="h-4 w-4" />
               Home
             </Link>
+
             <Link
               href="/properties"
               className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
@@ -67,6 +68,17 @@ export default function Navbar() {
             >
               <Building className="h-4 w-4" />
               Browse Properties
+            </Link>
+
+            {/* ⚠️ এডিট: 'About' পেজ লিঙ্ক ডেস্কটপ মেনুতে যুক্ত করা হলো */}
+            <Link
+              href="/about"
+              className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
+                isActive('/about') ? 'text-white' : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <User className="h-4 w-4" />
+              About
             </Link>
 
             {/* কন্ডিশনাল অথ বোতাম */}
@@ -139,6 +151,15 @@ export default function Navbar() {
             className="flex items-center gap-2 py-2 text-base font-medium text-zinc-300 hover:text-white"
           >
             <Building className="h-5 w-5" /> Browse Properties
+          </Link>
+
+          {/* ⚠️ এডিট: 'About' পেজ লিঙ্ক মোবাইল ড্রপডাউন মেনুতে যুক্ত করা হলো */}
+          <Link
+            href="/about"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-2 py-2 text-base font-medium text-zinc-300 hover:text-white"
+          >
+            <User className="h-5 w-5" /> About
           </Link>
 
           {!isLoading && user ? (
