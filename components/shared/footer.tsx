@@ -63,7 +63,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-8 border-t border-zinc-900 text-center text-xs text-zinc-600 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p>© {new Date().getFullYear()} RentNest Inc. All rights reserved.</p>
         <div className="flex gap-4">
-          <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-zinc-400">
+          <a href="https://github.com/miskaran2002" className="hover:text-zinc-400">
             <Code2 className="h-4 w-4" />
           </a>
         </div>
