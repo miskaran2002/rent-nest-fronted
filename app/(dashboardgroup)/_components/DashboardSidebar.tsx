@@ -40,6 +40,7 @@ export default function DashboardSidebar() {
         { name: 'Manage Users', path: '/admin-dashboard/users', icon: Users },
         { name: 'Manage Categories', path: '/admin-dashboard/categories', icon: Layers },
         { name: 'All Rentals', path: '/admin-dashboard/rentals', icon: ClipboardList },
+        { name: 'Profile Settings', path: '/admin-dashboard/profile', icon: User },
         
       ];
     }
