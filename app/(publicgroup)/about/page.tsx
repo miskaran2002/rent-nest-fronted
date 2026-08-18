@@ -44,11 +44,11 @@ export default function AboutPage() {
             transition={{ duration: 0.6 }}
             className="md:col-span-5 relative rounded-2xl overflow-hidden border border-zinc-800/80 shadow-2xl h-[480px] group animate-none"
           >
-            <img
-              src="/raihan.jpg"
-              alt="Md Raihan Uddin"
-              className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-500"
-            />
+           <img
+            src="/profile.png" // 'backgroundImage' পরিবর্তন করে সরাসরি 'src' করা হয়েছে
+            alt="Md Raihan Uddin"
+            className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-500"
+          />
             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
             <div className="absolute bottom-5 left-5 space-y-1">
               <h3 className="text-lg font-bold text-white">Md Raihan Uddin</h3>
