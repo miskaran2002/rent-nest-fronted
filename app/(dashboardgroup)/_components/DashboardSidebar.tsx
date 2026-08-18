@@ -40,6 +40,7 @@ export default function DashboardSidebar() {
         { name: 'Manage Users', path: '/admin-dashboard/users', icon: Users },
         { name: 'Manage Categories', path: '/admin-dashboard/categories', icon: Layers },
         { name: 'All Rentals', path: '/admin-dashboard/rentals', icon: ClipboardList },
+        
       ];
     }
 
@@ -48,6 +49,7 @@ export default function DashboardSidebar() {
         { name: 'Overview', path: '/landlord-dashboard', icon: LayoutDashboard },
         { name: 'My Properties', path: '/landlord-dashboard/my-properties', icon: Building },
         { name: 'Rental Requests', path: '/landlord-dashboard/rental-requests', icon: ClipboardList },
+        { name: 'Profile Settings', path: '/landlord-dashboard/profile', icon: User }
       ];
     }
 
