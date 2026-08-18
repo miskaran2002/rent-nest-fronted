@@ -2,9 +2,45 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard, DollarSign, Calendar, Hash, Building2, CheckCircle2 } from 'lucide-react';
+import { CreditCard, DollarSign, Calendar, Hash, Building2, CheckCircle2, Clock, XCircle, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PaymentService } from '@/service/payment.service';
+
+// স্ট্যাটাস অনুযায়ী ব্যাজের রঙ ও আইকন নির্ধারণের জন্য হেল্পার ফাংশন
+const getStatusConfig = (status: string) => {
+  switch (status) {
+    case 'PENDING':
+      return {
+        classes: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+        icon: <Clock className="h-3 w-3" />,
+      };
+    case 'APPROVED':
+      return {
+        classes: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+        icon: <CheckCircle2 className="h-3 w-3" />,
+      };
+    case 'REJECTED':
+      return {
+        classes: 'text-red-400 bg-red-500/10 border-red-500/20',
+        icon: <XCircle className="h-3 w-3" />,
+      };
+    case 'ACTIVE':
+      return {
+        classes: 'text-green-400 bg-green-500/10 border-green-500/20',
+        icon: <Star className="h-3 w-3" />,
+      };
+    case 'COMPLETED':
+      return {
+        classes: 'text-zinc-400 bg-zinc-500/10 border-zinc-500/20',
+        icon: <CheckCircle2 className="h-3 w-3" />,
+      };
+    default:
+      return {
+        classes: 'text-zinc-400 bg-zinc-500/10 border-zinc-500/20',
+        icon: <CheckCircle2 className="h-3 w-3" />,
+      };
+  }
+};
 
 export default function MyPaymentsPage() {
   const [payments, setPayments] = useState<any[]>([]);
@@ -55,24 +91,27 @@ export default function MyPaymentsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-900/60">
-              {payments.map((payment) => (
-                <tr key={payment.id} className="hover:bg-zinc-900/10 transition-colors">
-                  <td className="py-4 px-6 font-semibold text-white">{payment.rentalRequest?.property?.title}</td>
-                  <td className="py-4 px-6 font-mono text-xs text-zinc-500 max-w-[150px] truncate" title={payment.transactionId}>
-                    {payment.transactionId}
-                  </td>
-                  <td className="py-4 px-6 font-bold text-emerald-400">${payment.amount.toLocaleString()}</td>
-                  <td className="py-4 px-6 text-zinc-400">
-                    {payment.paidAt ? new Date(payment.paidAt).toLocaleDateString() : 'N/A'}
-                  </td>
-                  <td className="py-4 px-6">
-                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md uppercase">
-                      <CheckCircle2 className="h-3 w-3" />
-                      {payment.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {payments.map((payment) => {
+                const statusConfig = getStatusConfig(payment.status);
+                return (
+                  <tr key={payment.id} className="hover:bg-zinc-900/10 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-white">{payment.rentalRequest?.property?.title}</td>
+                    <td className="py-4 px-6 font-mono text-xs text-zinc-500 max-w-[150px] truncate" title={payment.transactionId}>
+                      {payment.transactionId}
+                    </td>
+                    <td className="py-4 px-6 font-bold text-emerald-400">${payment.amount.toLocaleString()}</td>
+                    <td className="py-4 px-6 text-zinc-400">
+                      {payment.paidAt ? new Date(payment.paidAt).toLocaleDateString() : 'N/A'}
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase border ${statusConfig.classes}`}>
+                        {statusConfig.icon}
+                        {payment.status}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </motion.div>
