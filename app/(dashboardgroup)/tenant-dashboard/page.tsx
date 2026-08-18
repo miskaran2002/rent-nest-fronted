@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { User, Mail, Shield, Save, Loader2 } from 'lucide-react';
 import axiosInstance from '../../../lib/axios';
+import { UserService } from '@/service/user.service';
+
 
 type TUserProfile = {
   id: string;
@@ -23,8 +25,7 @@ export default function TenantProfileSettings() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // ⚠️ আপনার ধরা সেই সঠিক এন্ডপয়েন্টটি এখানে ম্যাপ করা হলো
-        const response = await axiosInstance.get('/api/users/profile');
+        const response = await axiosInstance.get('/api/auth/me');
         if (response.data.success) {
           setProfile(response.data.data);
           setName(response.data.data.name);
@@ -45,10 +46,10 @@ export default function TenantProfileSettings() {
 
     setIsUpdating(true);
     try {
-      // প্রোফাইল নাম আপডেট করার জন্য আমাদের লাইভ প্যাচ এপিআই
-      const response = await axiosInstance.patch('/api/users/profile', { name });
-      if (response.data.success) {
-        setProfile(response.data.data);
+      // ⚠️ সংশোধিত ও সঠিক UserService এপিআই কল করা হলো
+      const response = await UserService.updateMyProfile(name);
+      if (response.success) {
+        setProfile(response.data);
         toast.success('Profile updated successfully!');
       }
     } catch (error: any) {
