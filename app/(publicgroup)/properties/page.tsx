@@ -25,6 +25,9 @@ export default function PropertiesBrowsePage() {
   const [maxPrice, setMaxPrice] = useState('');
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
+  // ⚠️ লোড মোর পেজিনেশন স্টেট (ডিফল্ট ৬টি প্রপার্টি দেখাবে)
+  const [visibleCount, setVisibleCount] = useState(6);
+
   // ১. মাউন্ট হওয়ার সময় ক্যাটাগরি ডাটা লোড করা
   useEffect(() => {
     const fetchCategories = async () => {
@@ -68,12 +71,16 @@ export default function PropertiesBrowsePage() {
 
   // স্টেট পরিবর্তন হলে এপিআই রি-ট্রিগার করার ইফেক্ট
   useEffect(() => {
-    // ডেবোন্স বা ইনস্ট্যান্ট ট্রিগারের জন্য ক্যাটাগরি ও সার্চ ইফেক্ট সেটআপ
     const delayDebounceFn = setTimeout(() => {
       fetchProperties();
-    }, 400); // ৩০০ মিলি-সেকেন্ড পর রিকোয়েস্ট পাঠাবে (Axios optimization)
+    }, 400);
 
     return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm, location, selectedCategory, minPrice, maxPrice]);
+
+  // ⚠️ UX রুল: যেকোনো ফিল্টার চেঞ্জ হলে দৃশ্যমান সংখ্যাটি আবার ৬-এ রিসেট হয়ে যাবে
+  useEffect(() => {
+    setVisibleCount(6);
   }, [searchTerm, location, selectedCategory, minPrice, maxPrice]);
 
   const handleResetFilters = () => {
@@ -82,8 +89,12 @@ export default function PropertiesBrowsePage() {
     setSelectedCategory('');
     setMinPrice('');
     setMaxPrice('');
+    setVisibleCount(6);
     toast.success('Filters reset successfully');
   };
+
+  // ৩. কারেন্ট পেজের জন্য প্রপার্টি স্লাইস করা (Slicing visible properties)
+  const visibleProperties = properties.slice(0, visibleCount);
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white select-none pb-20 pt-8">
@@ -216,18 +227,35 @@ export default function PropertiesBrowsePage() {
               <PropertySkeleton key={idx} />
             ))}
           </div>
-        ) : properties.length > 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {properties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
-          </motion.div>
+        ) : visibleProperties.length > 0 ? (
+          <div className="space-y-10">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {visibleProperties.map((property) => (
+                <PropertyCard key={property.id} property={property} />
+              ))}
+            </motion.div>
+
+            {/* ⚠️ গ্লোয়িং ডায়নামিক "Load More" পেজিনেশন বোতাম */}
+            {properties.length > visibleCount && (
+              <div className="flex justify-center pt-4">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setVisibleCount((prev) => prev + 6)}
+                  className="flex items-center gap-2 px-6 py-2.5 border border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900 text-zinc-300 hover:text-white rounded-xl text-sm font-bold transition-all cursor-pointer shadow-lg shadow-indigo-500/5"
+                >
+                  <RefreshCw className="h-4 w-4 text-indigo-500" />
+                  Load More Properties
+                </motion.button>
+              </div>
+            )}
+          </div>
         ) : (
-          /* ডাটা না থাকলে এম্পটি স্টেট (Empty State UX Marks) */
+          /* ডাটা না থাকলে এম্পটি স্টেট */
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
